@@ -1,9 +1,7 @@
-// Replace {{child_name}} in each story page
-const generateText = async (story, child_name) => {
-  // Example: split story into pages by '\n\n'
-  const pages = story.split('\n\n');
-  const personalizedPages = pages.map(page => page.replace(/{{child_name}}/g, child_name));
-  return personalizedPages; // array of text pages
+// services/generateText.js
+const generateText = async (childName, storyChoice) => {
+  // Return a simple placeholder story
+  return `Once upon a time, ${childName} went on an adventure in the magical world of ${storyChoice}.`;
 };
 
 module.exports = generateText;
