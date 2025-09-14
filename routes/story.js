@@ -17,7 +17,7 @@ router.post('/create', async (req, res) => {
     // 3. Create A4 PDF combining text + illustrations
     const pdfPath = await createPDF(storyTextPages, illustrations);
 
-    res.json({ pdf_url: `https://yourserver.com/${pdfPath}` });
+    res.json({ pdf_url: `https://mongol-story-backend.onrender.com/${pdfPath}` });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Something went wrong' });
