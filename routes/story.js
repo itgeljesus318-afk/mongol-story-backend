@@ -1,26 +1,38 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const generateText = require('../services/generateText');
-const generateImage = require('../services/generateImage');
-const createPDF = require('../services/createPDF');
+const generateText = require("../services/generateText");
+const generateImage = require("../services/generateImage");
+const createPDF = require("../services/createPDF");
 
-router.post('/create', async (req, res) => {
+router.post("/create", async (req, res) => {
   try {
-    const { story, child_name, child_appearance, style, child_photo_url } = req.body;
+    console.log("📩 Request body:", req.body);
 
-    // 1. Replace hero name in story text
-    const storyTextPages = await generateText(story, child_name);
+    const { childName, appearance } = req.body;
+    if (!childName || !appearance) {
+      console.log("❌ Missing required fields");
+      return res.status(400).json({ error: "childName and appearance required" });
+    }
 
-    // 2. Generate illustrations (array of image paths)
-    const illustrations = await generateImage(storyTextPages, child_appearance, style, child_photo_url);
+    // 1. generate story
+    const story = await generateText(childName, appearance);
+    console.log("✅ Story:", story);
 
-    // 3. Create A4 PDF combining text + illustrations
-    const pdfPath = await createPDF(storyTextPages, illustrations);
+    // 2. generate image
+    const imagePath = await generateImage(childName, appearance);
+    console.log("✅ Image saved at:", imagePath);
 
-    res.json({ pdf_url: `https://mongol-story-backend.onrender.com/${pdfPath}` });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Something went wrong' });
+    // 3. generate PDF
+    const pdfPath = await createPDF(childName, story, imagePath);
+    console.log("✅ PDF created:", pdfPath);
+
+    return res.json({
+      message: "Story created successfully",
+      pdfUrl: pdfPath
+    });
+  } catch (err) {
+    console.error("❌ ERROR in /api/story/create:", err);
+    res.status(500).json({ error: err.message || "Something went wrong" });
   }
 });
 
