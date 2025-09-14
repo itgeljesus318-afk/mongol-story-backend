@@ -1,18 +1,30 @@
+const express = require("express");
+const router = express.Router();
+const generateText = require("../services/generateText");
+const generateImage = require("../services/generateImage");
+const createPDF = require("../services/createPDF");
+
 router.post("/create", async (req, res) => {
   try {
-    console.log("📩 Request body:", req.body);
+    const { childName, appearance, story } = req.body;
 
-    const { childName, appearance } = req.body; // make sure JSON keys match
+    // Generate story text (placeholder)
+    const storyText = await generateText(childName, story);
 
-    if (!childName || !appearance) {
-      return res.status(400).json({ error: "childName and appearance required" });
-    }
+    // Generate image (placeholder)
+    const imagePath = await generateImage(childName);
 
-    // fake response for testing first
-    return res.json({ message: "Test success", childName, appearance });
+    // Generate PDF
+    const pdfPath = await createPDF(childName, storyText, imagePath);
 
+    return res.json({
+      message: "Story created successfully",
+      pdfUrl: `https://<your-backend-url>/temp/story-${childName}.pdf`
+    });
   } catch (err) {
     console.error("❌ ERROR in /api/story/create:", err);
     res.status(500).json({ error: err.message || "Something went wrong" });
   }
 });
+
+module.exports = router;
