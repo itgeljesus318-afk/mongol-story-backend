@@ -1,3 +1,7 @@
+app.get("/", (req, res) => {
+  res.send("✅ Mongolian Story Backend is running!");
+});
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
