@@ -8,6 +8,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());     // parse JSON bodies
 app.use(express.json());        // extra safety
+app.use("/temp", express.static("temp"));
+
 
 // routes
 const storyRoutes = require("./routes/story");
