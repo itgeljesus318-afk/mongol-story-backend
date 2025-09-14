@@ -8,30 +8,25 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-const generateImage = async (childName, appearance, style, pageNumber = 1) => {
-  try {
-    const prompt = `Hand-painted watercolor, classic Mongolian folk tale, A4, featuring a Mongolian child ${appearance}, ${style}, story page ${pageNumber}`;
+const generateImage = async (childName, appearance, style) => {
+  const prompt = `Hand-painted watercolor, classic Mongolian folk tale, A4, featuring a Mongolian child ${appearance}, ${style}`;
+  
+  const result = await openai.images.generate({
+    model: "gpt-image-1",
+    prompt: prompt,
+    size: "1024x1024"
+  });
 
-    const result = await openai.images.generate({
-      model: "gpt-image-1",
-      prompt: prompt,
-      size: "1024x1024"
-    });
+  const imageBase64 = result.data[0].b64_json;
+  const buffer = Buffer.from(imageBase64, "base64");
 
-    const imageBase64 = result.data[0].b64_json;
-    const imageBuffer = Buffer.from(imageBase64, "base64");
+  const dir = path.join(__dirname, "../temp");
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 
-    const imageDir = path.join(__dirname, "../temp");
-    if (!fs.existsSync(imageDir)) fs.mkdirSync(imageDir);
+  const imagePath = path.join(dir, `${childName}.png`);
+  fs.writeFileSync(imagePath, buffer);
 
-    const imagePath = path.join(imageDir, `page_${pageNumber}.png`);
-    fs.writeFileSync(imagePath, imageBuffer);
-
-    return imagePath;
-  } catch (err) {
-    console.error("❌ Error generating image:", err);
-    throw err;
-  }
+  return imagePath;
 };
 
 module.exports = generateImage;
