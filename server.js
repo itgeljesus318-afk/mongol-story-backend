@@ -2,24 +2,20 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-// initialize express first ✅
 const app = express();
 
-// middleware
-app.use(bodyParser.json());
+// ✅ Middleware must come BEFORE routes
 app.use(cors());
-
-// health check route
-app.get("/", (req, res) => {
-  res.send("✅ Mongolian Story Backend is running!");
-});
+app.use(bodyParser.json());     // parse JSON bodies
+app.use(express.json());        // extra safety
 
 // routes
 const storyRoutes = require("./routes/story");
 app.use("/api/story", storyRoutes);
 
-// start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+app.get("/", (req, res) => {
+  res.send("✅ Mongolian Story Backend is running!");
 });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
