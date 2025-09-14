@@ -19,7 +19,7 @@ router.post("/create", async (req, res) => {
 
     return res.json({
       message: "Story created successfully",
-      pdfUrl: `https://<your-backend-url>/temp/story-${childName}.pdf`
+      pdfUrl: `https://https://mongol-story-backend.onrender.com/temp/story-${childName}.pdf`
     });
   } catch (err) {
     console.error("❌ ERROR in /api/story/create:", err);
