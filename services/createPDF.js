@@ -1,31 +1,41 @@
-const { PDFDocument, rgb } = require('pdf-lib');
-const fs = require('fs');
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
 
-const createPDF = async (textPages, imagePaths) => {
-  const pdfDoc = await PDFDocument.create();
+const createPDF = async (childName, storyText, imagePath) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const tempDir = path.join(__dirname, "../temp");
+      if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 
-  for (let i = 0; i < textPages.length; i++) {
-    const page = pdfDoc.addPage([595.28, 841.89]); // A4 in points
-    const imageBytes = fs.readFileSync(imagePaths[i]);
-    const pngImage = await pdfDoc.embedPng(imageBytes);
+      const pdfPath = path.join(tempDir, `story-${childName}.pdf`);
+      const doc = new PDFDocument({ size: "A4", margin: 50 });
 
-    const { width, height } = pngImage.scale(0.7);
-    page.drawImage(pngImage, { x: 50, y: 250, width, height });
+      const stream = fs.createWriteStream(pdfPath);
+      doc.pipe(stream);
 
-    page.drawText(textPages[i], {
-      x: 50,
-      y: 200,
-      size: 14,
-      color: rgb(0, 0, 0),
-      maxWidth: 495
-    });
-  }
+      // Add title
+      doc.fontSize(24).text(`Story for ${childName}`, { align: "center" });
+      doc.moveDown();
 
-  const pdfBytes = await pdfDoc.save();
-  const pdfPath = `temp/personalized_story_${Date.now()}.pdf`;
-  fs.writeFileSync(pdfPath, pdfBytes);
+      // Add story text
+      doc.fontSize(14).text(storyText, { align: "left" });
+      doc.moveDown();
 
-  return pdfPath;
+      // Add image if exists
+      if (fs.existsSync(imagePath)) {
+        doc.image(imagePath, { fit: [400, 400], align: "center" });
+      }
+
+      doc.end();
+
+      stream.on("finish", () => {
+        resolve(pdfPath);
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
 };
 
 module.exports = createPDF;
