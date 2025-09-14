@@ -22,16 +22,14 @@ const createPDF = async (childName, storyText, imagePath) => {
       doc.fontSize(14).text(storyText, { align: "left" });
       doc.moveDown();
 
-      // Add image if exists
+      // Add placeholder image if exists
       if (fs.existsSync(imagePath)) {
         doc.image(imagePath, { fit: [400, 400], align: "center" });
       }
 
       doc.end();
 
-      stream.on("finish", () => {
-        resolve(pdfPath);
-      });
+      stream.on("finish", () => resolve(pdfPath));
     } catch (err) {
       reject(err);
     }
