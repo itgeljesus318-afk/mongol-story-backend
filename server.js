@@ -1,17 +1,25 @@
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
+// initialize express first ✅
+const app = express();
+
+// middleware
+app.use(bodyParser.json());
+app.use(cors());
+
+// health check route
 app.get("/", (req, res) => {
   res.send("✅ Mongolian Story Backend is running!");
 });
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const storyRoute = require('./routes/story');
+// routes
+const storyRoutes = require("./routes/story");
+app.use("/api/story", storyRoutes);
 
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-
-app.use('/api/story', storyRoute);
-
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
