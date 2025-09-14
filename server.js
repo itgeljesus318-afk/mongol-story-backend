@@ -7,8 +7,8 @@ const app = express();
 // ✅ Middleware must come BEFORE routes
 app.use(cors());
 app.use(bodyParser.json());     // parse JSON bodies
-app.use(express.json());        // extra safety
-app.use("/temp", express.static("temp"));
+app.use("/temp", express.static("temp"));        // extra safety
+
 
 
 // routes
